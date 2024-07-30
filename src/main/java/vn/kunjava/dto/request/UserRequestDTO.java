@@ -16,6 +16,7 @@ import static vn.kunjava.util.Gender.*;
 
 public class UserRequestDTO implements Serializable {
 
+    // username -> test develop branch
     private String username;
 
     private String password;
