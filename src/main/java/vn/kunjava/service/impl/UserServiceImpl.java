@@ -19,6 +19,7 @@ import vn.kunjava.util.UserStatus;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -65,7 +66,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUser(long userId, UserRequestDTO request) {
+    public long updateUser(long userId, UserRequestDTO request) {
+
+        User userUpdate = null;
+        Optional<User> optUser = userRepository.findById(userId);
+        if(optUser.isPresent()) {
+            userUpdate = optUser.get();
+            userUpdate.setEmail(request.getEmail());
+            userUpdate.setLastName(request.getLastName());
+            userUpdate.setFirstName(request.getFirstName());
+//            userUpdate.setPassword(request.getPassword());
+
+            // update data
+            userRepository.save(userUpdate);
+            log.info("User have update successful!");
+            return userUpdate.getId();
+        }
+        return 0;
 
     }
 
@@ -80,7 +97,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUserByIds(List<Long> ids) {
+        userRepository.deleteAllById(ids);
+    }
+
+    @Override
     public UserDetailResponse getUser(long userId) {
+
+        Optional<User> optUser = userRepository.findById(userId);
+        UserDetailResponse response = null;
+        if (optUser.isPresent()) {
+            User user = optUser.get();
+
+            response = new UserDetailResponse();
+            response.setFirstName(user.getFirstName());
+            response.setLastName(user.getLastName());
+            response.setPhone(user.getPhone());
+            response.setEmail(user.getEmail());
+
+            return response;
+        }
         return null;
     }
 

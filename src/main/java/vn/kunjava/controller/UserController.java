@@ -19,6 +19,7 @@ import vn.kunjava.dto.request.SampleDTO;
 import vn.kunjava.dto.request.UserRequestDTO;
 import vn.kunjava.dto.response.ResponseData;
 import vn.kunjava.dto.response.ResponseError;
+import vn.kunjava.dto.response.UserDetailResponse;
 import vn.kunjava.exception.ResourceNotFoundException;
 import vn.kunjava.model.User;
 import vn.kunjava.model.UserMapper;
@@ -55,10 +56,20 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{userId}")
-    public ResponseData<?> updateUser(@Min (1) @PathVariable int userId, @Valid @RequestBody UserRequestDTO userDTO){
+    @PutMapping("/user/{userId}")
+    public ResponseData<?> updateUser(@PathVariable long userId, @Valid @RequestBody UserRequestDTO userDTO){
 //        log.info("Request update userId={}" + userId);
-        return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.upd.success"));
+        try {
+            long resultId = userService.updateUser(userId, userDTO);
+            if (resultId != 0) {
+                return new ResponseData<>(HttpStatus.ACCEPTED.value(), Translator.toLocale("user.upd.success"), resultId);
+            } else {
+                return new ResponseError(HttpStatus.BAD_REQUEST.value(), "UserId wrong -> update fail!!");
+            }
+
+        } catch (Exception e) {
+            return new ResponseError(HttpStatus.BAD_REQUEST.value(), "Update user fail");
+        }
     }
 
     @PatchMapping("/{userId}")
@@ -73,10 +84,31 @@ public class UserController {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "Delete user success by ManhKun");
     }
 
-    @GetMapping("/{userId}")
-    public ResponseData<UserRequestDTO> getUser(@PathVariable int userId){
+    @DeleteMapping("/users")
+    public ResponseData<?> deleteAllUserByIds(@RequestBody List<Long> ids){
+        try {
+            System.out.println(ids);
+            userService.deleteUserByIds(ids);
+            return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "Delete all users by ids successfully!");
+        } catch (Exception e) {
+            return new ResponseData<>(HttpStatus.BAD_REQUEST.value(), "Delete all users by ids fail..!!");
+        }
+    }
+
+    @GetMapping("/user/{userId}")
+    public UserDetailResponse getUser(@PathVariable int userId){
         System.out.println("Request user detail by userID");
-        return new ResponseData<>(HttpStatus.OK.value(), "Get user by Id", new UserRequestDTO("Manh", "Java", "123456", "vanmanh289vn"));
+        try {
+            UserDetailResponse res = userService.getUser(userId);
+            if (res != null) {
+                return res;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @GetMapping("/list")

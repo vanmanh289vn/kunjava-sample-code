@@ -15,11 +15,13 @@ public interface UserService {
 
     long saveUser(UserRequestDTO request);
 
-    void updateUser(long userId, UserRequestDTO request);
+    long updateUser(long userId, UserRequestDTO request);
 
     void changeStatus(long userId, UserStatus status);
 
     void deleteUser(long userId);
+
+    void deleteUserByIds(List<Long> ids);
 
     UserDetailResponse getUser(long userId);
 
