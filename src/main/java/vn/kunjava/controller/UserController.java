@@ -84,7 +84,7 @@ public class UserController {
         return new ResponseData<>(HttpStatus.NO_CONTENT.value(), "Delete user success by ManhKun");
     }
 
-    @DeleteMapping("/users")
+    @DeleteMapping("/user/delete/all")
     public ResponseData<?> deleteAllUserByIds(@RequestBody List<Long> ids){
         try {
             System.out.println(ids);
